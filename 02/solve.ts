@@ -5,17 +5,14 @@ class Solve02 extends FileReader {
 
   constructor() {
     super();
-    this.readData("input.data")
-    //this.readData("test.data")
-      .then((data) => {
+    this.readData("input.data").then((data) => {
         this.passwords = data.split("\n");
         this.process();
-      })
-      .catch((err) => console.log(err));
+    })
   }
 
   private process = () => {
-    var valid = 0;
+    var valid1 = 0, valid2 = 0;
     this.passwords.forEach((line) => {
       const regex: RegExp = /(\d+)-(\d+) (\w): (\w+)/;
       const match: RegExpExecArray = regex.exec(line);
@@ -24,23 +21,33 @@ class Solve02 extends FileReader {
         const to: number = +match[2];
         const c: string = match[3];
         const password: string = match[4];
-        if (this.isValid(from, to, c, password)) {
-          valid++;
+        if (this.isValid1(from, to, c, password)) {
+          valid1++;
+        }
+        if (this.isValid2(from, to, c, password)) {
+          valid2++;
         }
       }
     });
-    console.log(valid);
+    console.log(valid1, valid2);
   };
 
-  private isValid(
-    from: number,
-    to: number,
-    c: string,
-    password: string
-  ): boolean {
+  private isValid1(from: number, to: number, c: string, password: string): boolean {
     const count = password.split(c).length - 1;
     return count >= from && count <= to;
   }
+
+  private isValid2(from: number, to: number, c: string, password: string): boolean {
+    const arr = password.split("");
+    var cnt = this.checkAt(arr, from, c);
+    cnt += this.checkAt(arr, to, c);
+    return cnt === 1;
+  }
+
+  private checkAt(arr: string[], n: number, c: string): number {
+    const len = arr.length;
+    return (n <= len && arr[n - 1] === c) ? 1 : 0  
+  }  
 }
 
 new Solve02();
