@@ -16,14 +16,16 @@ class Solve05 extends FileReader {
   }
 
   process = (data) => {
-    let max = 0
-    data.forEach(line => {
-      const id = this.getId(line)
-      if (id > max) {
-        max = id
+    const ids: number[] = data.map(line => this.getId(line))
+    console.log('max', Math.max(...ids))
+    let id: number = Math.min(...ids) + 1;
+    while (true) {
+      if (ids.indexOf(id) === -1 && ids.indexOf(id-1) !== -1 && ids.indexOf(id+1) !== -1) {
+        console.log('id', id)
+        break
       }
-    });
-    console.log(max)
+      id++;
+    }
   };
 
   public getId = (value): number => {
