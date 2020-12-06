@@ -6,34 +6,19 @@ class Solve06 extends FileReader {
     super();
     this.readData("input.data")
       .then((data) => {
-        this.process1(data.split("\n"));
-        this.process2(data.split("\n"));
+        this.process(data.split("\n"), this.countAll);
+        this.process(data.split("\n"), this.countYes);
       })
       .catch((err) => console.log(err));
   }
 
-  private process1 = (data: string[]) => {
-    const yes: Set<string> = new Set()
-    let sum = 0
-    data.forEach(line => {
-      if (line.trim() === '') {
-        sum += yes.size
-        yes.clear()        
-      } else {
-        line.split('').forEach(y => yes.add(y))
-      }
-    })
-    sum += yes.size    
-    console.log('yes', sum)
-  }
-
-  private process2 = (data: string[]) => {
+  private process = (data: string[], count: (stat: object, members: number) => number) => {
     let yes = {}
     let members = 0
     let sum = 0    
     data.forEach(line => {
       if (line.trim() === '') {
-        sum += this.countYes(yes, members)
+        sum += count(yes, members)
         yes = {}
         members = 0 
       } else {
@@ -47,11 +32,15 @@ class Solve06 extends FileReader {
         })          
       }      
     })
-    sum += this.countYes(yes, members)
+    sum += count(yes, members)
     console.log('yes', sum)
   }
 
-  private countYes = (yes, members): number => {
+  private countAll = (yes: object, members: number): number => {
+    return Object.keys(yes).length
+  }
+
+  private countYes = (yes: object, members: number): number => {
     let sum = 0
     for (const y in yes) {
       if (yes[y] === members) {
