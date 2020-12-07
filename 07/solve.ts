@@ -26,8 +26,6 @@ class Solve07 extends FileReader {
     toSearch.push(gold)
     const found: string[] = []
     while (true) {
-      console.log('to search', toSearch)
-      console.log('found', found.length, found)
       if (toSearch.length === 0) {
         break
       }
@@ -42,6 +40,7 @@ class Solve07 extends FileReader {
         }
       }
     }
+    console.log('found', found.length)
   };  
 
   findParents = (name: string): string[] => {
