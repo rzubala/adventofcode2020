@@ -19,7 +19,8 @@ class Solve07 extends FileReader {
       this.rules[rule[0]] = rule[1]
     });
     this.getGoldOutBag()
-    this.countGoldInBags()
+    this.countGoldInBags()  //part 2, ver 1 loop
+    console.log('bags', this.countInBags('shiny_gold', 1) - 1) //part 2, ver 2 recursive
   };  
 
   private countGoldInBags = () => {
@@ -40,6 +41,18 @@ class Solve07 extends FileReader {
       }      
     }    
     console.log('bags', sum)
+  }
+
+  private countInBags = (bag: string, count: number):number => {
+    const children = this.rules[bag]
+    let sum = count
+    if (Object.keys(children).length === 0) {
+      return sum
+    }    
+    for (const child of Object.keys(children)) { 
+      sum += this.countInBags(child, count*children[child])     
+    }    
+    return sum
   }
 
   private getGoldOutBag = () => {
