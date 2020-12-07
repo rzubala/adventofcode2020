@@ -63,7 +63,6 @@ class Solve07 extends FileReader {
       }
     }
     console.log('found', found.length)
-
   }
 
   findParents = (name: string): string[] => {
@@ -96,11 +95,6 @@ class Solve07 extends FileReader {
     })
     return [parent, bagsObj] 
   }
-
 }
 
-const solve: Solve07 = new Solve07();
-//const result = solve.parse('faded olive bags contain 2 bright crimson bags, 5 dotted green bags, 5 dull bronze bags, 2 posh turquoise bags.')
-//const result = solve.parse('faded magenta bags contain 4 bright coral bags.')
-//console.log(result)
-
+new Solve07()
