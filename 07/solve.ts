@@ -13,15 +13,37 @@ class Solve07 extends FileReader {
       .catch((err) => console.log(err));
   }
 
-  process = (data: string[]) => {
-    
+  process = (data: string[]) => {    
     data.forEach(line => {
       const rule = this.parse(line)
       this.rules[rule[0]] = rule[1]
     });
+    this.getGoldOutBag()
+    this.countGoldInBags()
+  };  
+
+  private countGoldInBags = () => {
     const gold = 'shiny_gold'
-    //Object.keys(this.rules).forEach(r => console.log(r, this.rules[r]))
-    
+    let sum = 0;    
+    const toCount = [{bag: gold, count: 1}]
+    while (true) {
+      if (toCount.length === 0) {
+        break
+      }
+      const bagObj = toCount.shift()
+      const bag = bagObj.bag
+      const count = bagObj.count
+      const children = this.rules[bag]
+      for (const child of Object.keys(children)) {
+        toCount.push({bag: child, count: count*children[child]})
+        sum += count*children[child]
+      }      
+    }    
+    console.log('bags', sum)
+  }
+
+  private getGoldOutBag = () => {
+    const gold = 'shiny_gold'        
     const toSearch: string[] = []
     toSearch.push(gold)
     const found: string[] = []
@@ -41,7 +63,8 @@ class Solve07 extends FileReader {
       }
     }
     console.log('found', found.length)
-  };  
+
+  }
 
   findParents = (name: string): string[] => {
     const parents: string[] = []
