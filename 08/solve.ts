@@ -10,9 +10,9 @@ class Solve08 extends FileReader {
   private acc: number = 0
   private pc: number = 0
 
-  init = async () => {
-    const data = await this.readData("input.data")
+  private init = async () => {
     try {
+      const data = await this.readData("input.data")    
       this.program = this.parse(data.split('\n'))
     } catch (ex) {
       console.log(ex)
