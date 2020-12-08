@@ -6,7 +6,6 @@ interface Instruction {
 }
 
 class Solve08 extends FileReader {
-  private rawData: string[]
   private program: Instruction[]
   private acc: number = 0
   private pc: number = 0
