@@ -65,32 +65,34 @@ class Solve08 extends FileReader {
     throw new Error('Should never reach it')
   }
 
-  repair = () => {
-    for (let i=0;i<this.program.length;i++) {
-      const ins = this.program[i]
-      if (ins.operand === 'nop' && ins.argument !== 0) {
-        const copy = [...this.program]
-        copy[i] = {operand: 'jmp', argument: ins.argument}
-        const res = this.startProgram(copy)
-        if (res > 0) {
-          break
-        }
-      }
-    };
+  private repair = () => {
+    if (!this.repairOp(this.checkNop, 'jmp')) {
+      this.repairOp(this.checkJmp, 'nop')
+    }
+  }
 
+  private repairOp = (check: (ins:Instruction) => boolean, newOp: string): boolean => {
     for (let i=0;i<this.program.length;i++) {
       const ins = this.program[i]
-      if (ins.operand === 'jmp') {
+      if (check(ins)) {
         const copy = [...this.program]
-        copy[i] = {operand: 'nop', argument: ins.argument}        
+        copy[i] = {operand: newOp, argument: ins.argument}        
         const res = this.startProgram(copy)
         if (res > 0) {
           console.log('part2', this.acc)
-          break
+          return true
         }
       }
     };
+    return false
+  }
 
+  private checkNop = (ins: Instruction): boolean => {
+    return ins.operand === 'nop' && ins.argument !== 0
+  }
+
+  private checkJmp = (ins: Instruction): boolean => {
+    return ins.operand === 'jmp'
   }
 }
 
