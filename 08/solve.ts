@@ -10,19 +10,25 @@ class Solve08 extends FileReader {
   private acc: number = 0
   private pc: number = 0
 
-  constructor() {
-    super();
-    this.readData("input.data")
-    .then((data: string) => {
+  init = async () => {
+    const data = await this.readData("input.data")
+    try {
       this.program = this.parse(data.split('\n'))
-      this.startProgram(this.program)
-      console.log('part1', this.acc)
-      this.repair()
-    })
-    .catch((err) => console.log(err));  
-  };
+    } catch (ex) {
+      console.log(ex)
+    }
+  }
 
-  parse = (data: string[]): Instruction[] => {
+  run = async () => {
+    await this.init()
+    this.startProgram(this.program)
+    console.log('part1', this.acc)
+    if (this.repair()) {
+      console.log('part2', this.acc)
+    }
+  }
+
+  private parse = (data: string[]): Instruction[] => {
     return data.map(line => {
       const tmp = line.split(' ')
       const arg = +tmp[1]
@@ -30,7 +36,7 @@ class Solve08 extends FileReader {
     }) 
   }
 
-  startProgram = (program: Instruction[]): number => {
+  private startProgram = (program: Instruction[]): number => {
     this.acc = 0
     this.pc = 0
     const set: Set<number> = new Set()
@@ -64,10 +70,11 @@ class Solve08 extends FileReader {
     throw new Error('Should never reach it')
   }
 
-  private repair = () => {
+  private repair = (): boolean => {
     if (!this.repairOp(this.checkNop, 'jmp')) {
-      this.repairOp(this.checkJmp, 'nop')
+      return this.repairOp(this.checkJmp, 'nop')
     }
+    return false
   }
 
   private repairOp = (check: (ins:Instruction) => boolean, newOp: string): boolean => {
@@ -78,7 +85,6 @@ class Solve08 extends FileReader {
         copy[i] = {operand: newOp, argument: ins.argument}        
         const res = this.startProgram(copy)
         if (res > 0) {
-          console.log('part2', this.acc)
           return true
         }
       }
@@ -95,4 +101,5 @@ class Solve08 extends FileReader {
   }
 }
 
-new Solve08();
+const solve = new Solve08();
+solve.run()
