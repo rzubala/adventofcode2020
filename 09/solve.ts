@@ -22,6 +22,22 @@ class Solve09 extends FileReader {
     }
   };
 
+  private part1 = ():number => {    
+    const preamble = 25
+    let i = preamble
+    while(true) {
+      if (i >= this.data.length) {
+        break;
+      }
+      if (!this.isValid(this.data[i], this.data.slice(i-preamble, i))) {
+        console.log('not valid', this.data[i])
+        return this.data[i]
+      }
+      i++
+    }
+    return -1
+  };
+
   private part2 = (num: number) => {
     const len=this.data.length
     let i = 0;
@@ -60,22 +76,6 @@ class Solve09 extends FileReader {
     }
     return -1
   }
-
-  private part1 = ():number => {    
-    const preamble = 25
-    let i = preamble
-    while(true) {
-      if (i >= this.data.length) {
-        break;
-      }
-      if (!this.isValid(this.data[i], this.data.slice(i-preamble, i))) {
-        console.log('not valid', this.data[i])
-        return this.data[i]
-      }
-      i++
-    }
-    return -1
-  };
 
   private isValid = (num: number, arr: number[]):boolean => {
     const len = arr.length
