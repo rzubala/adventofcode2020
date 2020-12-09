@@ -16,11 +16,52 @@ class Solve09 extends FileReader {
 
   run = async () => {
     await this.init();
-    this.process();
+    const num = this.part1();
+    if (num > 0) {
+      this.part2(num)
+    }
   };
 
-  private process = () => {
-    console.log(this.data);
+  private part2 = (num: number) => {
+    const len=this.data.length
+    let i = 0;
+    while(true) {
+      if (i >= len) {
+        break;
+      }
+      const res = this.findSum(num, i)
+      if (res > 0) {
+        console.log('found', res)
+        break;
+      }
+      i++
+    }
+  }
+
+  private findSum = (num: number, start: number): number => {
+    let sum = 0
+    let min = undefined
+    let max = -1
+    for (let i=start;i<this.data.length;i++) {
+      const tmp = this.data[i]
+      sum += tmp
+      if (min === undefined || tmp < min) {
+        min = tmp
+      }
+      if (tmp > max) {
+        max = tmp
+      }
+      if (sum > num) {
+        return -1
+      }
+      if (sum === num) {
+        return min + max
+      }
+    }
+    return -1
+  }
+
+  private part1 = ():number => {    
     const preamble = 25
     let i = preamble
     while(true) {
@@ -29,10 +70,11 @@ class Solve09 extends FileReader {
       }
       if (!this.isValid(this.data[i], this.data.slice(i-preamble, i))) {
         console.log('not valid', this.data[i])
-        break;
+        return this.data[i]
       }
       i++
     }
+    return -1
   };
 
   private isValid = (num: number, arr: number[]):boolean => {
