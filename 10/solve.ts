@@ -24,6 +24,7 @@ class Solve10 extends FileReader {
     const last = max + 3
     const adapters = [...this.adapters, last]    
 
+    //The Climbing Staircase Problem
     const steps = [];    
     steps[1] = adapters.includes(1) ? 1 : 0;
     steps[2] = adapters.includes(2) ? steps[1] + 1 : 0;
@@ -31,7 +32,6 @@ class Solve10 extends FileReader {
     for(let j = 4; j<=last; j++){
         steps[j] = adapters.includes(j) ? steps[j-1] + steps[j-2] + steps[j-3] : 0;
     }
-
     console.log(steps[last]);    
   }
 
