@@ -31,7 +31,7 @@ class Solve10 extends FileReader {
     }
     console.log(steps[last]);
 
-    //or version with reduce
+    //or alternative version with reduce
     const result = adapters.reduce((steps, adapter) => {
       steps[adapter] = (steps[adapter - 1] || 0) + (steps[adapter - 2] || 0) + (steps[adapter - 3] || 0)
       return steps
@@ -45,6 +45,8 @@ class Solve10 extends FileReader {
     let cur = 0
     const diffs = {}
     const adapters = [...this.adapters, last]
+    
+    //loop of
     for (let adapter of adapters) {
       const diff = adapter - cur;
       cur = adapter
@@ -52,6 +54,16 @@ class Solve10 extends FileReader {
       diffs[diff] = cnt
     }
     console.log(diffs, diffs[1]*diffs[3])
+
+    //or alternative version with reduce
+    const result = adapters.reduce((diffs, adapter, index) => {
+      const prev = index > 0 ? adapters[index - 1] : 0
+      const diff = adapter - prev
+      let cnt = (diffs[diff] || 0) + 1
+      diffs[diff] = cnt
+      return diffs
+    }, {})
+    console.log(result, result[1]*result[3])
   };
 }
 
