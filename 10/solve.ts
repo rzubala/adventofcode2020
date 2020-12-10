@@ -6,7 +6,7 @@ class Solve10 extends FileReader {
   private init = async () => {
     try {
       const rawData = await this.readData("input.data");
-      this.adapters = rawData.split("\n").map(a => +a).sort((a,b) => a - b);
+      this.adapters = rawData.split("\n").map((a: string) => +a).sort((a: number,b: number) => a - b);
     } catch (ex) {
       console.log(ex);
       throw ex;
@@ -26,8 +26,8 @@ class Solve10 extends FileReader {
 
     //The Climbing Staircase Problem    
     const steps = [1];    
-    for(let j = 1; j<=last; j++){
-        steps[j] = adapters.includes(j) ? (steps[j-1] || 0) + (steps[j-2] || 0) + (steps[j-3] || 0) : 0
+    for (let adapter of adapters) {  
+        steps[adapter] = (steps[adapter-1] || 0) + (steps[adapter-2] || 0) + (steps[adapter-3] || 0)
     }
     console.log(steps[last]);
 
