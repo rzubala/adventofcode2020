@@ -24,15 +24,19 @@ class Solve10 extends FileReader {
     const last = max + 3
     const adapters = [...this.adapters, last]    
 
-    //The Climbing Staircase Problem
-    const steps = [];    
-    steps[1] = adapters.includes(1) ? 1 : 0;
-    steps[2] = adapters.includes(2) ? steps[1] + 1 : 0;
-    steps[3] = adapters.includes(3) ? steps[1] + steps[2] + 1 : 0;
-    for(let j = 4; j<=last; j++){
-        steps[j] = adapters.includes(j) ? steps[j-1] + steps[j-2] + steps[j-3] : 0;
+    //The Climbing Staircase Problem    
+    const steps = [1];    
+    for(let j = 1; j<=last; j++){
+        steps[j] = adapters.includes(j) ? (steps[j-1] || 0) + (steps[j-2] || 0) + (steps[j-3] || 0) : 0
     }
-    console.log(steps[last]);    
+    console.log(steps[last]);
+
+    //or version with reduce
+    const result = adapters.reduce((steps, adapter) => {
+      steps[adapter] = (steps[adapter - 1] || 0) + (steps[adapter - 2] || 0) + (steps[adapter - 3] || 0)
+      return steps
+    }, [1])
+    console.log(result[last]);
   }
 
   private process1 = () => {
