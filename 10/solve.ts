@@ -48,11 +48,8 @@ class Solve10 extends FileReader {
     for (let adapter of adapters) {
       const diff = adapter - cur;
       cur = adapter
-      let cnt = diffs[diff]
-      if (cnt === undefined) {
-        cnt = 0
-      }
-      diffs[diff] = cnt+1
+      let cnt = (diffs[diff] || 0) + 1
+      diffs[diff] = cnt
     }
     console.log(diffs, diffs[1]*diffs[3])
   };
