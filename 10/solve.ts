@@ -15,10 +15,27 @@ class Solve10 extends FileReader {
 
   run = async () => {
     await this.init();
-    this.process();
+    this.process1();
+    this.process2();
   };
 
-  private process = () => {
+  private process2 = () => {
+    const max = Math.max(...this.adapters)
+    const last = max + 3
+    const adapters = [...this.adapters, last]    
+
+    const steps = [];    
+    steps[1] = adapters.includes(1) ? 1 : 0;
+    steps[2] = adapters.includes(2) ? steps[1] + 1 : 0;
+    steps[3] = adapters.includes(3) ? steps[1] + steps[2] + 1 : 0;
+    for(let j = 4; j<=last; j++){
+        steps[j] = adapters.includes(j) ? steps[j-1] + steps[j-2] + steps[j-3] : 0;
+    }
+
+    console.log(steps[last]);    
+  }
+
+  private process1 = () => {
     const max = Math.max(...this.adapters)
     const last = max + 3
     let cur = 0
