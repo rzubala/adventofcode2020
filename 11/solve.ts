@@ -89,15 +89,7 @@ class Solve11 extends FileReader {
   }
 
   private copy = (seats: Array<Array<string>>): Array<Array<string>> => {
-    const result: Array<Array<string>> = []
-    seats.forEach(row => {
-      const newRow = []
-      row.forEach(p => {
-        newRow.push(p)
-      })
-      result.push(newRow)
-    })
-    return result;
+    return seats.map(row => row.slice(0, this.width))    
   }
 
   private countOccupied = (seats: Array<Array<string>>, x: number, y: number, mode: boolean): number => {
