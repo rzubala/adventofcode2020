@@ -38,7 +38,6 @@ class Solve11 extends FileReader {
   private process = (others: number, mode: boolean) => {        
     let seats = this.copy(this.seats)
     while(true) {
-      //this.print(seats)
       let changed = 0      
       let newSeats = []
       for (let y=0;y<this.height;y++) {
@@ -89,12 +88,6 @@ class Solve11 extends FileReader {
     return res
   }
 
-  private print = (seats: Array<Array<string>>) => {
-    console.log('\n')
-    seats.forEach(r => console.log(r.join('')))
-    console.log('\n')
-  }
-
   private copy = (seats: Array<Array<string>>): Array<Array<string>> => {
     const result: Array<Array<string>> = []
     seats.forEach(row => {
@@ -115,125 +108,59 @@ class Solve11 extends FileReader {
     }
   }
 
+  private left: (x:number, y: number) => Point = (x: number, y: number): Point => {
+    return {x: x-1, y}
+  }
+  private right: (x:number, y: number) => Point = (x: number, y: number): Point => {
+    return {x: x+1, y}
+  }
+  private up: (x:number, y: number) => Point = (x: number, y: number): Point => {
+    return {x, y: y-1}
+  }
+  private down: (x:number, y: number) => Point = (x: number, y: number): Point => {
+    return {x, y: y+1}
+  }
+  private upleft: (x:number, y: number) => Point = (x: number, y: number): Point => {
+    return {x: x-1, y: y-1}
+  }
+  private upright: (x:number, y: number) => Point = (x: number, y: number): Point => {
+    return {x: x+1, y: y-1}
+  }  
+  private downleft: (x:number, y: number) => Point = (x: number, y: number): Point => {
+    return {x: x-1, y: y+1}
+  }
+  private downright: (x:number, y: number) => Point = (x: number, y: number): Point => {
+    return {x: x+1, y: y+1}
+  }
+
   private countExtended = (seats: Array<Array<string>>, x: number, y: number): number => {
     let sum = 0
+    const ops: ((x:number, y: number) => Point)[] = []
+    ops.push(this.left)
+    ops.push(this.right)
+    ops.push(this.up)
+    ops.push(this.down)
+    ops.push(this.upleft)
+    ops.push(this.upright)
+    ops.push(this.downleft)
+    ops.push(this.downright)
 
-    //left
-    let xi = x
-    let yi = y
-    while(true) {
-      xi -= 1
-      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
-        break
-      }
-      if (seats[yi][xi] === '#') {
-        sum++
-        break
+    for (let op of ops) {
+      let xi = x
+      let yi = y
+      while(true) {
+        const p = op(xi, yi)
+        xi = p.x
+        yi = p.y      
+        if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
+          break
+        }
+        if (seats[yi][xi] === '#') {
+          sum++
+          break
+        }
       }
     }
-
-    //right
-    xi = x
-    yi = y
-    while(true) {
-      xi += 1
-      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
-        break
-      }
-      if (seats[yi][xi] === '#') {
-        sum++
-        break
-      }
-    }
-
-    //top
-    xi = x
-    yi = y
-    while(true) {
-      yi -= 1
-      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
-        break
-      }
-      if (seats[yi][xi] === '#') {
-        sum++
-        break
-      }
-    }
-
-    //down
-    xi = x
-    yi = y
-    while(true) {
-      yi += 1
-      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
-        break
-      }
-      if (seats[yi][xi] === '#') {
-        sum++
-        break
-      }
-    }
-
-    //up left
-    xi = x
-    yi = y
-    while(true) {
-      xi -= 1
-      yi -= 1
-      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
-        break
-      }
-      if (seats[yi][xi] === '#') {
-        sum++
-        break
-      }
-    }
-
-    //up right
-    xi = x
-    yi = y
-    while(true) {
-      xi += 1
-      yi -= 1
-      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
-        break
-      }
-      if (seats[yi][xi] === '#') {
-        sum++
-        break
-      }
-    }
-
-    //down left
-    xi = x
-    yi = y
-    while(true) {
-      xi -= 1
-      yi += 1
-      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
-        break
-      }
-      if (seats[yi][xi] === '#') {
-        sum++
-        break
-      }
-    }
-
-    //down right
-    xi = x
-    yi = y
-    while(true) {
-      xi += 1
-      yi += 1
-      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
-        break
-      }
-      if (seats[yi][xi] === '#') {
-        sum++
-        break
-      }      
-    }    
-
     return sum
   }
 
