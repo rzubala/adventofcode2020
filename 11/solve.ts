@@ -31,10 +31,11 @@ class Solve11 extends FileReader {
 
   run = async () => {
     await this.init();
-    this.process();
+    this.process(4, false);
+    this.process(5, true);
   };
 
-  private process = () => {        
+  private process = (others: number, mode: boolean) => {        
     let seats = this.copy(this.seats)
     while(true) {
       //this.print(seats)
@@ -45,7 +46,7 @@ class Solve11 extends FileReader {
         for (let x=0;x<this.width;x++) {        
          switch(seats[y][x]) {
            case 'L':
-             const cntL = this.countOccupied(seats, x, y)
+             const cntL = this.countOccupied(seats, x, y, mode)
              if (cntL === 0) {
                newRow[x] = '#'
                changed++
@@ -57,8 +58,8 @@ class Solve11 extends FileReader {
               newRow[x] = '.'
               break
             case '#':
-              const cntO = this.countOccupied(seats, x, y)
-              if (cntO >= 4) {
+              const cntO = this.countOccupied(seats, x, y, mode)
+              if (cntO >= others) {
                 newRow[x] = 'L'
                 changed++
               } else {
@@ -71,7 +72,6 @@ class Solve11 extends FileReader {
         }
         newSeats.push(newRow)         
       }
-      //console.log(changed)
       if (changed === 0) {
         console.log(this.count(seats, '#'))
         break
@@ -107,7 +107,137 @@ class Solve11 extends FileReader {
     return result;
   }
 
-  private countOccupied = (seats: Array<Array<string>>, x: number, y: number): number => {
+  private countOccupied = (seats: Array<Array<string>>, x: number, y: number, mode: boolean): number => {
+    if (mode === true) {
+      return this.countExtended(seats, x, y)
+    } else {
+      return this.countBasic(seats, x, y)
+    }
+  }
+
+  private countExtended = (seats: Array<Array<string>>, x: number, y: number): number => {
+    let sum = 0
+
+    //left
+    let xi = x
+    let yi = y
+    while(true) {
+      xi -= 1
+      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
+        break
+      }
+      if (seats[yi][xi] === '#') {
+        sum++
+        break
+      }
+    }
+
+    //right
+    xi = x
+    yi = y
+    while(true) {
+      xi += 1
+      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
+        break
+      }
+      if (seats[yi][xi] === '#') {
+        sum++
+        break
+      }
+    }
+
+    //top
+    xi = x
+    yi = y
+    while(true) {
+      yi -= 1
+      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
+        break
+      }
+      if (seats[yi][xi] === '#') {
+        sum++
+        break
+      }
+    }
+
+    //down
+    xi = x
+    yi = y
+    while(true) {
+      yi += 1
+      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
+        break
+      }
+      if (seats[yi][xi] === '#') {
+        sum++
+        break
+      }
+    }
+
+    //up left
+    xi = x
+    yi = y
+    while(true) {
+      xi -= 1
+      yi -= 1
+      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
+        break
+      }
+      if (seats[yi][xi] === '#') {
+        sum++
+        break
+      }
+    }
+
+    //up right
+    xi = x
+    yi = y
+    while(true) {
+      xi += 1
+      yi -= 1
+      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
+        break
+      }
+      if (seats[yi][xi] === '#') {
+        sum++
+        break
+      }
+    }
+
+    //down left
+    xi = x
+    yi = y
+    while(true) {
+      xi -= 1
+      yi += 1
+      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
+        break
+      }
+      if (seats[yi][xi] === '#') {
+        sum++
+        break
+      }
+    }
+
+    //down right
+    xi = x
+    yi = y
+    while(true) {
+      xi += 1
+      yi += 1
+      if (this.isNotValid(xi, yi) || seats[yi][xi] === 'L') {
+        break
+      }
+      if (seats[yi][xi] === '#') {
+        sum++
+        break
+      }      
+    }    
+
+    return sum
+  }
+
+  private countBasic = (seats: Array<Array<string>>, x: number, y: number): number => {
     const n = this.getNeighbours(x, y)
     let cnt = 0
     for (let p of n) {
@@ -131,8 +261,12 @@ class Solve11 extends FileReader {
     return points
   }
 
+  private isNotValid = (x: number, y: number): boolean => {
+    return x < 0 || y < 0 || x >= this.width || y >= this.height;
+  }
+
   private tryAdd = (x: number, y: number, points: Point[]) => {
-    if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
+    if (this.isNotValid(x, y)) {
       return
     }
     points.push({x, y})
