@@ -76,13 +76,6 @@ class Solve11 extends FileReader {
     }
   };
 
-  private count = (seats: Array<Array<string>>, symbol: string): number => {
-    return seats.reduce((acc, row) => {
-      acc += row.filter((p) => p === symbol).length;
-      return acc;
-    }, 0);
-  };
-
   private countOccupied = (
     seats: Array<Array<string>>,
     x: number,
@@ -99,17 +92,7 @@ class Solve11 extends FileReader {
     single: boolean
   ): number => {
     let sum = 0;
-    const ops: ((x: number, y: number) => Point)[] = [];
-    ops.push(this.left);
-    ops.push(this.right);
-    ops.push(this.up);
-    ops.push(this.down);
-    ops.push(this.upleft);
-    ops.push(this.upright);
-    ops.push(this.downleft);
-    ops.push(this.downright);
-
-    for (let op of ops) {
+    for (let op of this.directions) {
       let xi = x;
       let yi = y;
       while (true) {
@@ -124,7 +107,7 @@ class Solve11 extends FileReader {
           break;
         }
         if (single) {
-          break
+          break;
         }
       }
     }
@@ -180,12 +163,30 @@ class Solve11 extends FileReader {
     return { x: x + 1, y: y + 1 };
   };
 
+  private directions: ((x: number, y: number) => Point)[] = [
+    this.left,
+    this.right,
+    this.up,
+    this.down,
+    this.upleft,
+    this.upright,
+    this.downleft,
+    this.downright,
+  ];
+
   private isNotValid = (x: number, y: number): boolean => {
     return x < 0 || y < 0 || x >= this.width || y >= this.height;
   };
 
   private copy = (seats: Array<Array<string>>): Array<Array<string>> => {
     return seats.map((row) => row.slice(0, this.width));
+  };
+
+  private count = (seats: Array<Array<string>>, symbol: string): number => {
+    return seats.reduce((acc, row) => {
+      acc += row.filter((p) => p === symbol).length;
+      return acc;
+    }, 0);
   };
 }
 
