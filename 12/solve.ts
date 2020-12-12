@@ -41,8 +41,6 @@ class Solve12 extends FileReader {
     let dir: Direction = Direction.E;
     let point: Point = {x:0, y:0}
     for (let ins of this.instructions) {
-      console.log(ins)
-      console.log('from',dir, point)
       switch (ins.command) {
         case "E":
         case "S":
@@ -53,7 +51,6 @@ class Solve12 extends FileReader {
         case "L":          
         case "R":
           dir = this.turn(dir, ins.command, ins.value)
-          console.log('turned', dir)
           break;
         case "F":
           point = this.move(point, Direction[dir], ins.value)
@@ -61,7 +58,6 @@ class Solve12 extends FileReader {
         default:
           throw new Error("something went wrong");
       }
-      console.log('to',dir, point)
     }
     console.log(this.dist(point))
   };
@@ -71,7 +67,6 @@ class Solve12 extends FileReader {
   }
 
   private move = (p: Point, dir: string, v: number) => {
-    console.log('dir', dir, Direction[Direction.N], dir === Direction[Direction.N])    
     if (dir === Direction[Direction.E]) {
       return {x: p.x + v, y: p.y}
     } if (dir === Direction[Direction.W]) {
@@ -87,7 +82,6 @@ class Solve12 extends FileReader {
     const arr = [Direction.E, Direction.S, Direction.W, Direction.N]      
     let index = arr.findIndex(e => e === d)
     const steps = v/90
-    console.log('to turn from', d, dir, index, steps)
     if (dir === 'L') {
       index = (index + 4 - steps)%4
     } else if (dir === 'R') {
