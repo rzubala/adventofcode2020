@@ -79,15 +79,14 @@ class Solve12 extends FileReader {
   }
 
   private turn = (d: Direction, dir: string, v: number): Direction => {
-    const arr = [Direction.E, Direction.S, Direction.W, Direction.N]      
-    let index = arr.findIndex(e => e === d)
+    let index = d
     const steps = v/90
     if (dir === 'L') {
       index = (index + 4 - steps)%4
     } else if (dir === 'R') {
       index = (index + steps)%4
     } 
-    return arr[index]
+    return index
   }
 }
 
