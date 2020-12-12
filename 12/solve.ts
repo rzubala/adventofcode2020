@@ -34,10 +34,11 @@ class Solve12 extends FileReader {
 
   run = async () => {
     await this.init();
-    this.process();
+    this.process1();
+    this.process2();
   };
 
-  private process = () => {
+  private process1 = () => {
     let dir: Direction = Direction.E;
     let point: Point = {x:0, y:0}
     for (let ins of this.instructions) {
@@ -62,8 +63,39 @@ class Solve12 extends FileReader {
     console.log(this.dist(point))
   };
   
+  private process2 = () => {    
+    let point: Point = {x:0, y:0}
+    let waypoint: Point = {x:10, y:-1}
+    for (let ins of this.instructions) {
+      switch (ins.command) {
+        case "E":
+        case "S":
+        case "W":
+        case "N":
+          waypoint = this.move(waypoint, ins.command, ins.value)
+          break;
+        case "L":          
+        case "R":
+          waypoint = this.rotate(point, waypoint, ins.command, ins.value)
+          break;
+        case "F":
+          const diff = {x: waypoint.x - point.x, y: waypoint.y - point.y}
+          point = this.moveToWaypoint(point, diff, ins.value)
+          waypoint = {x: point.x + diff.x, y: point.y + diff.y}
+          break;
+        default:
+          throw new Error("something went wrong");
+      }
+    }
+    console.log(this.dist(point))
+  };
+
   private dist = (p: Point): number => {
     return Math.abs(p.x) + Math.abs(p.y)
+  }
+
+  private moveToWaypoint = (p: Point, d: Point, v: number): Point => {
+    return {x: p.x + d.x*v, y: p.y + d.y*v}
   }
 
   private move = (p: Point, dir: string, v: number) => {
@@ -76,6 +108,19 @@ class Solve12 extends FileReader {
     } if (dir === Direction[Direction.N]) {
       return {x: p.x, y: p.y - v}
     }
+  }
+
+  private rotate = (p: Point, w: Point, dir: string, v: number): Point => {
+    const steps = v/90
+    const tmp = {x: w.x-p.x, y:w.y-p.y}
+    if (steps == 2) {
+      return {x: p.x-tmp.x, y: p.y-tmp.y}
+    } else if (steps === 1 && dir === 'L' || steps === 3 && dir === 'R') {            
+      return {x: p.x+tmp.y, y: p.y-tmp.x}      
+    } else if (steps === 1 && dir === 'R' || steps === 3 && dir === 'L') {      
+      return {x: p.x-tmp.y, y: p.y+tmp.x}
+    }
+    return p
   }
 
   private turn = (d: Direction, dir: string, v: number): Direction => {
