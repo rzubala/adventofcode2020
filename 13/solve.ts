@@ -32,6 +32,7 @@ class Solve13 extends FileReader {
     let n = this.buses[0].id
     let timestamp = 0
     for (let bus of this.buses.slice(1)) {
+      console.log(timestamp, n, bus.id, bus.offset)
       while(true) {
         if ((timestamp + bus.offset) % bus.id === 0) {
           n *= bus.id;
