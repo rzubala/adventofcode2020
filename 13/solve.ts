@@ -29,25 +29,25 @@ class Solve13 extends FileReader {
   };
 
   private process2 = () => {
-    let multiplier = this.buses[0].id
-    let i = 0
+    let n = this.buses[0].id
+    let timestamp = 0
     for (let bus of this.buses.slice(1)) {
       while(true) {
-        if ((i + bus.offset) % bus.id === 0) {
-          multiplier *= bus.id;
+        if ((timestamp + bus.offset) % bus.id === 0) {
+          n *= bus.id;
           break;
         }
-        i += multiplier;
+        timestamp += n;
       }
     }
-    console.log('res', i);
+    console.log('res', timestamp);
   };
 
   private process1() {
     let min: number = undefined;
     let res = 0;
     for (let bus of this.buses) {
-      const diff = Math.ceil(this.time / bus.id) * bus.id - this.time;
+      const diff = bus.id - this.time % bus.id;
       if (diff < min || min === undefined) {
         res = diff * bus.id;
         min = diff;
