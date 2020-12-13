@@ -1,4 +1,5 @@
 import { FileReader } from "../common";
+import { lcm } from '../utils'
 
 interface BusDeparture {
   id: number,
@@ -33,12 +34,13 @@ class Solve13 extends FileReader {
     let timestamp = 0
     for (let bus of this.buses.slice(1)) {
       while(true) {
-        if ((timestamp + bus.offset) % bus.id === 0) {
-          n *= bus.id;
+        if ((timestamp + bus.offset) % bus.id === 0) {          
+          n = lcm(bus.id, n);
           break;
         }
         timestamp += n;
       }
+      
     }
     console.log('res', timestamp);
   };
