@@ -31,16 +31,17 @@ class Solve13 extends FileReader {
 
   private process2 = () => {
     let n = this.buses[0].id
-    let timestamp = 0
+    let timestamp = 0    
     for (let bus of this.buses.slice(1)) {
+      let it = 0
       while(true) {
+        it++;
         if ((timestamp + bus.offset) % bus.id === 0) {          
           n = lcm(bus.id, n);
           break;
         }
         timestamp += n;
-      }
-      
+      }      
     }
     console.log('res', timestamp);
   };
