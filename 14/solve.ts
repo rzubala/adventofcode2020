@@ -16,25 +16,22 @@ class Solve14 extends FileReader {
 
   run = async () => {
     await this.init();
-    const cnt = this.process1();
+    const cnt = this.process(this.apply1);
     this.generateBitCombinations(cnt)
-    this.process2()
+    this.process(this.apply2)
   };
 
-  private process2 = () => {
+  private process = (apply: (input: string[], mask: string, mem: object) => void): number => {
     let mask: string = ""    
     let mem = {}
+    let maxX = 0
     for (let line of this.data) {
       const input = line.split(' = ')
       if (input[0] === 'mask') {
         mask = input[1]
       } else {
-        const res = +input[1]
-        const address = +input[0].split('').filter(c => Number.isInteger(+c)).join('')
-        const addresses = this.mask2(address, mask)
-        addresses.forEach(a => {
-          mem[a] = res
-        })                
+        apply(input, mask, mem)
+        maxX = Math.max(mask.split('').filter(c => c === 'X').length, maxX)
       }
     }    
     let sum = 0
@@ -42,6 +39,37 @@ class Solve14 extends FileReader {
       sum += +val
     }
     console.log('sum', sum)
+    return maxX
+  };
+
+  private apply1 = (input: string[], mask: string, mem: object) => {
+    const res = this.mask(+input[1], mask)
+    const address = +input[0].split('').filter(c => Number.isInteger(+c)).join('')
+    mem[address] = res    
+  }
+
+  private apply2 = (input: string[], mask: string, mem: object) => {
+    const res = +input[1]
+    const address = +input[0].split('').filter(c => Number.isInteger(+c)).join('')
+    const addresses = this.mask2(address, mask)
+    addresses.forEach(a => {
+      mem[a] = res
+    })      
+  } 
+
+  private toBin = (n: number): String => {
+    return n.toString(2).padStart(36, '0')
+  }
+
+  private mask = (value: number, mask: string): number => {
+    const arr = this.toBin(value).split('')    
+    const res: string = mask.split('').map((m, i) => {
+      if (m === 'X') {
+        return arr[i]
+      }
+      return m
+    }).join('')
+    return parseInt(res, 2)
   }
 
   private mask2 = (value: number, mask: string): number[] => {
@@ -70,44 +98,6 @@ class Solve14 extends FileReader {
       addresses.push(parseInt(address.join(''), 2))
     }
     return addresses
-  }
-
-  private process1 = (): number => {
-    let mask: string = ""    
-    let mem = {}
-    let maxX = 0
-    for (let line of this.data) {
-      const input = line.split(' = ')
-      if (input[0] === 'mask') {
-        mask = input[1]
-      } else {
-        const res = this.mask(+input[1], mask)
-        const address = +input[0].split('').filter(c => Number.isInteger(+c)).join('')
-        mem[address] = res        
-        maxX = Math.max(mask.split('').filter(c => c === 'X').length, maxX)
-      }
-    }    
-    let sum = 0
-    for (let val of Object.values(mem)) {
-      sum += +val
-    }
-    console.log('sum', sum)
-    return maxX
-  };
-
-  private toBin = (n: number): String => {
-    return n.toString(2).padStart(36, '0')
-  }
-
-  private mask = (value: number, mask: string): number => {
-    const arr = this.toBin(value).split('')    
-    const res: string = mask.split('').map((m, i) => {
-      if (m === 'X') {
-        return arr[i]
-      }
-      return m
-    }).join('')
-    return parseInt(res, 2)
   }
 
   private generateBitCombinations = (cnt: number) => {   
