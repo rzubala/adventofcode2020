@@ -26,7 +26,8 @@ class Solve15 extends FileReader {
     }, {})
 
     let it = this.data.length;
-    let end = 2020
+    //let end = 2020
+    let end = 30000000
     let last = this.data[it - 1]
     while (true) {
       let cur
@@ -39,16 +40,17 @@ class Solve15 extends FileReader {
       }
       const newindices: number[] = (mem[cur] || [])      
       newindices.push(it)
+      while (newindices.length > 2) {
+        newindices.shift()
+      }
       mem[cur] = newindices
       last = cur
       
-      console.log((it + 1), cur)
       if ((it + 1) === end) {
         break
       }
       it++
     }
-
   };
 }
 
