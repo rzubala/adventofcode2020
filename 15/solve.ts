@@ -19,14 +19,12 @@ class Solve15 extends FileReader {
   };
 
   private process = () => {
-    console.log(this.data);
     const mem = this.data.reduce((a, v, i) => {
       a[v] = [i]
       return a
     }, {})
 
-    let it = this.data.length;
-    //let end = 2020
+    let it = this.data.length;    
     let end = 30000000
     let last = this.data[it - 1]
     while (true) {
@@ -44,13 +42,16 @@ class Solve15 extends FileReader {
         newindices.shift()
       }
       mem[cur] = newindices
-      last = cur
-      
+      last = cur      
+      if ((it + 1) === 2020) {
+        console.log(last)    
+      }
       if ((it + 1) === end) {
         break
       }
       it++
     }
+    console.log(last)
   };
 }
 
