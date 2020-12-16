@@ -69,15 +69,16 @@ class Solve16 extends FileReader {
       this.removeIndices(len, map)
       len++;
     }
-    let departures = 6, d = 0, m = 1
-    let ticket = this.validTickets[0]
-    for (let v of map.values()) {
-      m *= ticket[v[0]]
-      if (++d >= departures) {
-        break
-      }
+    for (let key of map.keys()) {
+      this.removeIndices(len, map)
     }
-    console.log(m)
+
+    let departuresCnt = 6
+    let ticket = this.validTickets[0]
+    const res = [...map.values()].slice(0,departuresCnt).reduce((a, v) => {
+      return a*ticket[v[0]]
+    }, 1)
+    console.log(res)
   }
 
   private removeIndices = (len: number, map: Map<number, number[]>) => {
