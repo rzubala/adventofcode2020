@@ -86,14 +86,8 @@ class Solve16 extends FileReader {
       if (key === len) {
         continue
       }
-      const tmp = (map.get(key) || [])      
-      const newi = []
-      for (let i of tmp) {
-        if (!indices.includes(i)) {
-          newi.push(i)
-        }
-      }
-      map.set(key, newi)
+      const newi = (map.get(key) || []).filter(i => !indices.includes(i))
+      map.set(key, newi || [])
     }
   }
 
