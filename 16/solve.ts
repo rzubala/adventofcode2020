@@ -69,9 +69,6 @@ class Solve16 extends FileReader {
       this.removeIndices(len, map)
       len++;
     }
-    for (let key of map.keys()) {
-      this.removeIndices(len, map)
-    }
 
     let departuresCnt = 6
     let ticket = this.validTickets[0]
