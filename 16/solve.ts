@@ -58,7 +58,6 @@ class Solve16 extends FileReader {
         }
         match = newMatch
       }
-      //console.log(rule.name, match.length)
       map.set(match.length, match)
     }
     
@@ -70,15 +69,11 @@ class Solve16 extends FileReader {
       this.removeIndices(len, map)
       len++;
     }
-    let departures = 6
-    let d = 0
+    let departures = 6, d = 0, m = 1
     let ticket = this.validTickets[0]
-    let m = 1
     for (let v of map.values()) {
-      let index = v[0]
-      m *= ticket[index]
-      d++
-      if (d >= departures) {
+      m *= ticket[v[0]]
+      if (++d >= departures) {
         break
       }
     }
