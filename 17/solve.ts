@@ -67,7 +67,6 @@ class Grid {
 }
 
 class Solve17 extends FileReader {
-  private pocket: Array<Array<Array<number>>> = [];
   private grid = new Grid();
 
   private init = async () => {
