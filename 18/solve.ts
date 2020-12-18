@@ -15,13 +15,14 @@ class Solve18 extends FileReader {
 
   run = async () => {
     await this.init();
-    this.process();
+    this.process(false);
+    this.process(true);
   };
 
-  private process = () => {
+  private process = (mode: boolean) => {
     let sum = 0
     for (let line of this.data) {
-      const rpn = this.RPN(line)
+      const rpn = this.RPN(line, mode)
       const res = this.calc(rpn)
       sum += res      
     }
@@ -51,19 +52,27 @@ class Solve18 extends FileReader {
     return (stack.pop() || 0);
   }
 
-  private RPN = (input: string): string[] => {    
+  private RPN = (input: string, mode: boolean): string[] => {    
     const parts = input.replace(/\s/g, '').split('');
     const stack: string[] = []
     const exit: string[] = []    
     for (let part of parts) {
       if (part === '+' || part === '*') {
-        const prevOp = stack.pop()
-        if (prevOp) {
-          if (prevOp === '+' || prevOp === '*') {
-            exit.push(prevOp)
-          } else {
-            stack.push(prevOp)
+        while (stack.length > 0) {
+          const prevOp = stack[stack.length - 1]
+          if (prevOp !== '+' && prevOp !== '*') {
+            break
           }
+          if (mode) {
+            if (prevOp === '+') {
+              exit.push((stack.pop() || ''))  
+            } else {
+              break
+            }
+          } else {
+            exit.push((stack.pop() || ''))
+            break
+          }  
         }
         stack.push(part)
         continue
