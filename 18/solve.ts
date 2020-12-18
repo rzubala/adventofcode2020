@@ -1,5 +1,15 @@
 import { FileReader } from "../common";
 
+const add = (a: number, b: number): number => a+b
+const mul = (a: number, b: number): number => a*b
+interface OpMap {
+  [op: string]: (a: number, b: number)=> number;
+}
+const ops: OpMap = {
+  '+': add,
+  '*': mul
+}
+
 class Solve18 extends FileReader {
   private data: string[] = [];
 
@@ -33,15 +43,8 @@ class Solve18 extends FileReader {
     const res = 0
     const stack: number[] = []
     for (let part of rpn) {
-      if (part === '+') {
-        const b = (stack.pop() || 0)
-        const a = (stack.pop() || 0)
-        stack.push(a+b)
-        continue
-      } else if (part === '*') {
-        const b = (stack.pop() || 0)
-        const a = (stack.pop() || 0)
-        stack.push(a*b)
+      if (Object.keys(ops).includes(part)) {
+        stack.push(ops[part]((stack.pop() || 0), (stack.pop() || 0)))
         continue
       }
       let num = parseInt(part)
