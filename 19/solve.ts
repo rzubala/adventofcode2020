@@ -15,7 +15,7 @@ class Solve19 extends FileReader {
 
   private init = async () => {
     try {
-      const rawData = await this.readData("input.data");      
+      const rawData = await this.readData("input2.data");      
       for (const line of rawData.split("\n")) {
         if (line.trim().length === 0) {
           continue
@@ -47,8 +47,7 @@ class Solve19 extends FileReader {
     }
     const values: string[] = this.rules[key].split(' ')
     let result: string [] = []
-    let part: Array<Array<string>> = []
-    console.log(key, values.join(' '))
+    let part: Array<Array<string>> = []    
     for (let value of values) {
       if (value === '"a"') {
         part.push(['a'])
@@ -71,6 +70,7 @@ class Solve19 extends FileReader {
     
     result = result.concat(this.merge(part))
     this.parsed[key] = result
+    console.log('parsed', key)
     return result;
   }
 
@@ -101,7 +101,8 @@ class Solve19 extends FileReader {
   }
 
   private process = () => {
-    console.log(this.parse(0))
+    this.parse(0)
+    console.log('size', this.parsed[0].length, this.data.length)
     // for (let key of Object.keys(this.parsed)) {
     //   const values = this.parsed[+key]
     //   console.log(key, ':', values.join(','))
