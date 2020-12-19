@@ -1,5 +1,9 @@
 import { FileReader } from "../common";
 
+interface YesMap {
+  [key: string]: number
+}
+
 class Solve06 extends FileReader {  
 
   constructor() {
@@ -12,8 +16,8 @@ class Solve06 extends FileReader {
       .catch((err) => console.log(err));
   }
 
-  private process = (data: string[], count: (stat: object, members: number) => number) => {
-    let yes = {}
+  private process = (data: string[], count: (stat: YesMap, members: number) => number) => {
+    let yes: YesMap = {}
     let members = 0
     let sum = 0    
     data.forEach(line => {
@@ -36,11 +40,11 @@ class Solve06 extends FileReader {
     console.log('yes', sum)
   }
 
-  private countAll = (yes: object, members: number): number => {
+  private countAll = (yes: YesMap, members: number): number => {
     return Object.keys(yes).length
   }
 
-  private countYes = (yes: object, members: number): number => {
+  private countYes = (yes: YesMap, members: number): number => {
     let sum = 0
     for (const y in yes) {
       if (yes[y] === members) {
