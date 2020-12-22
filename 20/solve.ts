@@ -8,13 +8,14 @@ enum Side {
 }
 const sides = [Side.UP, Side.RIGHT, Side.DOWN, Side.LEFT]
 
+const size = 10
+
 interface SideMap {
   [key: string]: number
 }
 
 class Tile {
-  grid: Array<Array<string>> = [];
-  size = 10;
+  grid: Array<Array<string>> = [];  
   id: number;
   neighbours: SideMap = {};
   oriented: boolean = false;
@@ -27,14 +28,6 @@ class Tile {
     this.grid.push(row);
   };
   edge = (side: Side): string[] => getEdge(this.grid, side)
-  
-  debug = () => console.log(this.id, ":", Object.keys(this.neighbours).length, this.neighbours, this.oriented)
-
-  printGrid = () => {
-    console.log("***", this.id, "***");
-    this.grid.forEach((l) => console.log(l.join("")));
-    console.log()
-  };
 }
 
 const isMatch = (e1: string[], e2: string[]): boolean => {  
@@ -108,11 +101,14 @@ const rotateRight = (input: Array<Array<string>>): Array<Array<string>> => {
 };
 
 class Solve20 extends FileReader {
+  private monster: Array<Array<boolean>> = []
   private tiles: Tile[] = [];
+  private tileSpace: number = 0
+  private map: Array<Array<boolean>> = []
 
   private init = async () => {
     try {
-      const rawData = await this.readData("input.data");
+      const rawData = await this.readData("test.data");
       let tile: Tile | undefined;
       for (let line of rawData.split("\n")) {
         if (line.trim().length === 0) {
@@ -131,6 +127,17 @@ class Solve20 extends FileReader {
           tile.addRow(line);
         }
       }
+      this.tileSpace = (size - 2)*Math.sqrt(this.tiles.length)
+      this.map = new Array(this.tileSpace).fill(false).map(() => new Array(this.tileSpace).fill(false));
+
+      const monsterData = await this.readData("monster.data")
+      for (let line of monsterData.split('\n')) {
+        const row = []
+        for (let e of line.split('').map((e: string) => e === '#' ? true : false)) {
+          row.push(e)
+        }
+        this.monster.push(row)
+      }      
     } catch (ex) {
       console.log(ex);
       throw ex;
@@ -148,12 +155,15 @@ class Solve20 extends FileReader {
       queue.push(start)
       while (queue.length > 0) {
         const tile = queue.pop()
+        if (Object.keys(tile!.neighbours).length === 4) {
+          continue
+        }
         const others = this.tiles.filter(t => {
           return t.id !== tile!.id && Object.keys(tile!.neighbours).length < 4
         })
-        let cnt = 0
+        let cnt = Object.keys(tile!.neighbours).length
         for (let tilej of others) {
-          for (let tmp of sides) {
+          for (let _ of sides) {
             if (tile!.oriented && tilej.oriented) {
               if (this.matchOriented(tile!, tilej)) {
                 queue.push(tilej)
@@ -179,8 +189,50 @@ class Solve20 extends FileReader {
         }
       }
       const corners = this.tiles.filter(t => Object.keys(t.neighbours).length === 2)
+      const leftUpper = corners.filter(t => !t.neighbours[Side.LEFT] && !t.neighbours[Side.UP])[0]
       console.log(corners.map(c => c.id).reduce((a,v) => {return a *= v}, 1))
+
+      this.createMap(leftUpper)
+      this.monster.forEach(line => console.log(line.map(v => v ? '#' : ' ').join('')))
   };
+
+  private createMap = (start: Tile) => {
+    let iter: Tile = start
+    let side: Tile  = start
+    let x = 0
+    let y = 0
+    while (true) {
+      x = 0
+      while (true) {
+        this.fillMap(iter, x, y)
+        const tmp = this.getTitle(iter.neighbours[Side.RIGHT])
+        if (!tmp) {
+          break
+        }
+        iter = tmp
+        x++        
+      }
+      const tmp = this.getTitle(side.neighbours[Side.DOWN])
+      if (!tmp) {
+        break
+      }
+      side = tmp
+      iter = side
+      y++
+    }
+    this.map.forEach(row => console.log(row.map(e => e ? '1': '0').join('')))
+  }
+
+  private fillMap = (tile: Tile, x: number, y: number) => {
+    const space = size - 2
+    tile.grid.slice(1, size - 1).forEach((row, j) => {
+      row.slice(1, size - 1).forEach((v, i) => {
+        this.map[y*space+j][x*space+i] = v === '#' ? true : false
+      })
+    })
+  }
+
+  private getTitle = (id: number): Tile | undefined => this.tiles.find(t => t.id === id)
 
   private matchOriented = (tile1: Tile, tile2: Tile): boolean => {
     for (let side1 of sides) {
