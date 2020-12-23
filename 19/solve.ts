@@ -4,6 +4,10 @@ interface RuleMap {
   [key: number]: string;
 }
 
+interface RuleParsedMap {
+  [key: number]: Array<Array<number | string>>;
+}
+
 interface ParsedMap {
   [key: number]: string[];
 }
@@ -11,6 +15,7 @@ interface ParsedMap {
 class Solve19 extends FileReader {
   private data: string[] = [];
   private rules: RuleMap = {}
+  private parsedRules: RuleParsedMap = {}
   private parsed: ParsedMap = {}
 
   private init = async () => {
@@ -28,6 +33,7 @@ class Solve19 extends FileReader {
           this.data.push(line)
         }
       }
+      this.parseRules()
     } catch (ex) {
       console.log(ex);
       throw ex;
@@ -36,8 +42,72 @@ class Solve19 extends FileReader {
 
   run = async () => {
     await this.init();
-    this.process();
+    this.process1();
+    this.parsedRules[8] = [[42], [42, 8]];
+    this.parsedRules[11] = [[42, 31], [42, 11, 31]];
+    this.process2();
   };
+
+  private parseRules = () => {
+    for (let rule of Object.keys(this.rules)) {
+      const value = this.rules[+rule]
+      const parsed = []
+      for (let part of value.split(' | ')) {        
+        const npart = part.split(' ').map(e => isNaN(+e) ? e.split('')[1] : +e)
+        parsed.push(npart)
+      }
+      this.parsedRules[+rule] = parsed
+      
+    }
+  }
+
+  private findPathLength = (value: string, rule: number, position: number): number[] => {
+    if (position >= value.length) {
+      return [-1];
+    }
+    const ruleValue = this.parsedRules[rule][0][0]
+    if (isNaN(+ruleValue)) {
+      if (ruleValue as unknown as string === value[position]) {
+        return [position + 1]
+      } else {
+        return [-1]
+      }
+    }
+    const positionsQueue = [];
+    for (const variants of this.parsedRules[rule]) {
+      let nextPositions = [position];
+      let found = true;  
+      for (const testRule of variants) {
+        const next: Array<number> = []
+        for (let nextPosition of nextPositions) {
+          next.push(...this.findPathLength(value, +testRule, nextPosition).filter(e => e !== -1))
+        }
+        if (next.length === 0) {
+          found = false;
+          break;
+        }
+        nextPositions = next
+      }  
+      if (found) {
+        positionsQueue.push(...nextPositions);
+      }
+    }
+    if (positionsQueue.length > 0) {
+      return positionsQueue;
+    } else {  
+      return [-1];
+    }
+  }
+  
+  private process2 = () => {
+    let cnt = 0
+    for (let line of this.data) {
+      if (this.findPathLength(line, 0, 0).filter(length => length === line.length).length > 0) {
+        cnt++
+      }
+    }
+    console.log(cnt)
+  }
 
   private parse = (key: number): string[] => {
     if (this.parsed[key]) {
@@ -97,7 +167,7 @@ class Solve19 extends FileReader {
     return arr.map(e => e)
   }
 
-  private process = () => {
+  private process1 = () => {
     this.parse(0)
     console.log('size', this.parsed[0].length, this.data.length)
     console.log(this.data.filter(d => this.parsed[0].includes(d)).length)    

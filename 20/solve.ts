@@ -260,7 +260,6 @@ class Solve20 extends FileReader {
       iter = side
       y++
     }
-    this.map.forEach(row => console.log(row.map(e => e ? '1': '0').join('')))
         
     let monsterGrid = flipHMonster(this.monster)
     for (let _ of sides) {
@@ -300,7 +299,6 @@ class Solve20 extends FileReader {
     for (let y=0;y<this.tileSpace - height;y++) {
       for (let x=0;x<this.tileSpace - width;x++) {
         if (this.isMonster(y, x, points)) {
-          console.log('found monster')
           found = true
         }
       }
