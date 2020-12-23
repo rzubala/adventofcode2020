@@ -74,13 +74,13 @@ class Solve19 extends FileReader {
       }
     }
     const positionsQueue = [];
-    for (const variants of this.parsedRules[rule]) {
+    for (const nextRules of this.parsedRules[rule]) {
       let nextPositions = [position];
       let found = true;  
-      for (const testRule of variants) {
+      for (const nextRule of nextRules) {
         const next: Array<number> = []
         for (let nextPosition of nextPositions) {
-          next.push(...this.findPathLength(value, +testRule, nextPosition).filter(e => e !== -1))
+          next.push(...this.findPathLength(value, +nextRule, nextPosition).filter(e => e !== -1))
         }
         if (next.length === 0) {
           found = false;
