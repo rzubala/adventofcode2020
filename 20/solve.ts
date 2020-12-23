@@ -74,6 +74,20 @@ const flipH = (input: Array<Array<string>>): Array<Array<string>> => {
   return res;
 };
 
+const flipHMonster = (input: Array<Array<boolean>>): Array<Array<boolean>> => {
+  const res: Array<Array<boolean>> = [];
+  const height = input.length
+  const width = input[0].length
+  for (let y=0;y<input.length;y++) {
+    const row: boolean[] = [];
+    for (let x=0;x<input[0].length;x++) {
+      row.push(input[y][width - 1 - x]);
+    }
+    res.push(row);
+  }
+  return res;
+};
+
 const flipV = (input: Array<Array<string>>): Array<Array<string>> => {
   const res: Array<Array<string>> = [];
   const len = input.length;
@@ -81,6 +95,19 @@ const flipV = (input: Array<Array<string>>): Array<Array<string>> => {
     const row: string[] = [];
     for (let x of Array.from({ length: len }, (v, k) => k)) {
       row.push(input[len - 1 - y][x]);
+    }
+    res.push(row);
+  }
+  return res;
+};
+
+const flipVMonster = (input: Array<Array<boolean>>): Array<Array<boolean>> => {
+  const res: Array<Array<boolean>> = [];
+  const height = input.length
+  for (let y=0;y<input.length;y++) {
+    const row: boolean[] = [];
+    for (let x=0;x<input[0].length;x++) {
+      row.push(input[height - 1 - y][x]);
     }
     res.push(row);
   }
@@ -100,6 +127,20 @@ const rotateRight = (input: Array<Array<string>>): Array<Array<string>> => {
   return res;
 };
 
+const rotateRightMonster = (input: Array<Array<boolean>>): Array<Array<boolean>> => {
+  const res: Array<Array<boolean>> = [];
+  const width = input[0].length
+  const height = input.length
+  for (let x=0;x<width;x++) {  
+    const row: boolean[] = [];
+    for (let y=0;y<height;y++) {  
+      row.push(input[height - 1 - y][x]);
+    }
+    res.push(row);
+  }
+  return res;
+};
+
 class Solve20 extends FileReader {
   private monster: Array<Array<boolean>> = []
   private tiles: Tile[] = [];
@@ -108,7 +149,7 @@ class Solve20 extends FileReader {
 
   private init = async () => {
     try {
-      const rawData = await this.readData("test.data");
+      const rawData = await this.readData("input.data");
       let tile: Tile | undefined;
       for (let line of rawData.split("\n")) {
         if (line.trim().length === 0) {
@@ -192,8 +233,7 @@ class Solve20 extends FileReader {
       const leftUpper = corners.filter(t => !t.neighbours[Side.LEFT] && !t.neighbours[Side.UP])[0]
       console.log(corners.map(c => c.id).reduce((a,v) => {return a *= v}, 1))
 
-      this.createMap(leftUpper)
-      this.monster.forEach(line => console.log(line.map(v => v ? '#' : ' ').join('')))
+      this.createMap(leftUpper)      
   };
 
   private createMap = (start: Tile) => {
@@ -221,6 +261,69 @@ class Solve20 extends FileReader {
       y++
     }
     this.map.forEach(row => console.log(row.map(e => e ? '1': '0').join('')))
+        
+    let monsterGrid = flipHMonster(this.monster)
+    for (let _ of sides) {
+      if (this.markMonster(monsterGrid)) {
+        return
+      }
+      monsterGrid = rotateRightMonster(monsterGrid)
+    }    
+
+    monsterGrid = flipVMonster(this.monster)
+    for (let _ of sides) {
+      if (this.markMonster(monsterGrid)) {
+        return
+      }
+      monsterGrid = rotateRightMonster(monsterGrid)
+    }    
+
+    monsterGrid = this.monster
+    for (let _ of sides) {
+      if (this.markMonster(monsterGrid)) {
+        return
+      }
+      monsterGrid = rotateRightMonster(monsterGrid)
+    }
+  }
+
+  private markMonster = (data: Array<Array<boolean>>): boolean => {
+    const width = data[0].length
+    const height = data.length
+    const points: [number, number][] = [];
+    data.forEach((row, i) => {
+      const found = row.map((v, i) => v ? i : undefined).filter(v => v !== undefined)
+      found.forEach(e => points.push([i, e!]))
+    })
+
+    let found = false
+    for (let y=0;y<this.tileSpace - height;y++) {
+      for (let x=0;x<this.tileSpace - width;x++) {
+        if (this.isMonster(y, x, points)) {
+          console.log('found monster')
+          found = true
+        }
+      }
+    }
+    if (found) {
+      console.log(this.map.reduce((a, row) => {
+        a += row.filter(v => v).length
+        return a
+      }, 0))
+    }
+    return found
+  }
+
+  private isMonster = (y: number, x: number, monster: [number, number][]): boolean => {
+    for (let m of monster) {
+      if (!this.map[y+m[0]][x+m[1]]) {
+        return false
+      }
+    }
+    for (let m of monster) {
+      this.map[y+m[0]][x+m[1]] = false
+    }
+    return true
   }
 
   private fillMap = (tile: Tile, x: number, y: number) => {
