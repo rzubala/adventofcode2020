@@ -41,20 +41,19 @@ class Solve21 extends FileReader {
   run = async () => {
     await this.init();
     this.process();
-
-    let cnt = 0
-    for (let food of Object.keys(this.foodStat)) {
+    
+    let cnt = Object.keys(this.foodStat).reduce((a, food) => {
       if (this.match[food] === undefined) {
-        cnt += this.foodStat[food]
+        a += this.foodStat[food]
       }
-    }
+      return a
+    }, 0)
     console.log('part1', cnt)
 
     const allergenMap: MatchMap = {}
     for (let food of Object.keys(this.match)) {
-      //console.log(food, this.match[food])
       allergenMap[this.match[food]] = food
-    }
+    }    
     const list = Object.keys(allergenMap).sort().reduce((a,f) => {
       if (a.length > 0) {
         a += ","
@@ -62,7 +61,7 @@ class Solve21 extends FileReader {
       a += allergenMap[f]
       return a
     }, "")
-    console.log(list)
+    console.log('part2', list)
   };
 
   private process = () => {    
@@ -74,7 +73,6 @@ class Solve21 extends FileReader {
           this.match[found[0]] = allergen
           toProcess = true
         }
-        //console.log(allergen, found)
       }
       if (!toProcess) {
         break
@@ -100,31 +98,6 @@ class Solve21 extends FileReader {
     }
     return result
   }
-
-  // private clearAllergen = (allergen: string, exceptFood: string) => {
-  //   for (let food of Object.keys(this.map)) {
-  //     if (food === exceptFood) {
-  //       continue;
-  //     }
-  //     const allergens = this.map[food];
-  //     if (Object.keys(allergens).includes(allergen)) {
-  //       //console.log('clear', allergen, food, allergens)
-  //       delete allergens[allergen];
-  //     }
-  //   }
-  // };
-
-  // private getAllergen = (
-  //   allergens: FoodStat,
-  //   value: number
-  // ): string | undefined => {
-  //   for (let allergen of Object.keys(allergens)) {
-  //     if (allergens[allergen] === value) {
-  //       return allergen;
-  //     }
-  //   }
-  //   return undefined;
-  // };
 }
 
 new Solve21().run();
