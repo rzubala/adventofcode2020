@@ -5,7 +5,7 @@ interface AllergenMap {
 }
 
 interface MatchMap {
-  [food: string]: string
+  [key: string]: string
 }
 
 interface FoodStat {
@@ -41,20 +41,28 @@ class Solve21 extends FileReader {
   run = async () => {
     await this.init();
     this.process();
-    //console.log("***");
-    for (let food of Object.keys(this.match)) {
-      console.log(food, this.match[food])
-    }
+
     let cnt = 0
     for (let food of Object.keys(this.foodStat)) {
       if (this.match[food] === undefined) {
         cnt += this.foodStat[food]
       }
     }
-    console.log(cnt)
-    // for (let allergen of Object.keys(this.map)) {
-    //   console.log(allergen, this.map[allergen]);
-    // }
+    console.log('part1', cnt)
+
+    const allergenMap: MatchMap = {}
+    for (let food of Object.keys(this.match)) {
+      //console.log(food, this.match[food])
+      allergenMap[this.match[food]] = food
+    }
+    const list = Object.keys(allergenMap).sort().reduce((a,f) => {
+      if (a.length > 0) {
+        a += ","
+      }
+      a += allergenMap[f]
+      return a
+    }, "")
+    console.log(list)
   };
 
   private process = () => {    
