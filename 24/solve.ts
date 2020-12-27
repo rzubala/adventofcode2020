@@ -34,6 +34,7 @@ interface Point {
   y: number;
   z: number;
 }
+const equals = (p1: Point, p2: Point): boolean => p1.x === p2.x && p1.y === p2.y && p1.z === p2.z
 const pointKey = (p: Point) => `${p.x}-${p.y}-${p.z}`
 interface GridMap {
   [point: string]: boolean
@@ -77,7 +78,7 @@ class Solve24 extends FileReader {
 
   private init = async () => {
     try {
-      const rawData = await this.readData("test.data");
+      const rawData = await this.readData("input.data");
       const rows = rawData.split("\n");
       for (let row of rows) {
         const line: Side[] = [];
@@ -123,14 +124,14 @@ class Solve24 extends FileReader {
       points.push(point)
     }
     console.log('part 1')
-    console.log(Object.values(this.grid).filter(v => v).length)
+    console.log(Object.values(this.grid).filter(v => v).length)    
     
     console.log('part 2')
     for (let d=0;d<100;d++) {
-      points = [...points, ...this.addNeighbours(points)]
+      points.push(...this.addNeighbours(points))
 
       const toWhite: Point[] = []
-      const toBlack: Point[] = []
+      const toBlack: Point[] = []      
 
       for (let point of points) {
 
@@ -158,17 +159,34 @@ class Solve24 extends FileReader {
 
   private addNeighbours = (points: Point[]): Point[] => {
     const result: Point[] = []
-    for (let point of points) {
-      const val = this.grid[pointKey(point)] || false
+    const resultHash: Set<String> = new Set()
+    for (let black of points) {
+      const val = this.grid[pointKey(black)] || false
       if (!val) {
         continue
       }
+      
+      
       for (let dir of Object.values(moves)) {
-        const n = dir(point)
-        if (points.includes(n) || result.includes(n)) {
+        const whiteNeigh = dir(black)
+        if (resultHash.has(pointKey(whiteNeigh))) {
           continue
         }
-        result.push(n)
+        let foundOtherBlack = false
+        for (let dirw of Object.values(moves)) {
+          const whiteNeighNeigh = dirw(whiteNeigh)
+          if (equals(whiteNeighNeigh, black)) {
+            continue
+          }
+          if (this.grid[pointKey(whiteNeighNeigh)] === true) {
+            foundOtherBlack = true
+            break
+          }
+        }
+        if (foundOtherBlack) {
+          result.push(whiteNeigh)
+          resultHash.add(pointKey(whiteNeigh))
+        }
       }
     }
     return result;
