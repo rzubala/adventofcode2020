@@ -77,7 +77,7 @@ class Solve24 extends FileReader {
 
   private init = async () => {
     try {
-      const rawData = await this.readData("input.data");
+      const rawData = await this.readData("test.data");
       const rows = rawData.split("\n");
       for (let row of rows) {
         const line: Side[] = [];
@@ -111,7 +111,8 @@ class Solve24 extends FileReader {
     this.process();
   };
 
-  private process = () => {    
+  private process = () => {
+    let points: Point[] = []
     for (let line of this.lines) {
       let point: Point = {x:0,y:0,z:0}
       for (let ins of line) {
@@ -119,10 +120,68 @@ class Solve24 extends FileReader {
       }
       const val = (this.grid[pointKey(point)] || false)
       this.grid[pointKey(point)] = !val
-      console.log('set', point, !val)
+      points.push(point)
     }
+    console.log('part 1')
     console.log(Object.values(this.grid).filter(v => v).length)
+    
+    console.log('part 2')
+    for (let d=0;d<100;d++) {
+      points = [...points, ...this.addNeighbours(points)]
+
+      const toWhite: Point[] = []
+      const toBlack: Point[] = []
+
+      for (let point of points) {
+
+        const blackNeighbours = this.countBlack(point)
+        const val = this.grid[pointKey(point)] || false
+
+        if (val && (blackNeighbours === 0 || blackNeighbours > 2)) {
+          toWhite.push(point)
+        } else if (!val && blackNeighbours === 2) {
+          toBlack.push(point)
+        }        
+      }
+
+      for (let w of toWhite) {
+        this.grid[pointKey(w)] = false
+      }
+      for (let b of toBlack) {
+        this.grid[pointKey(b)] = true
+      }
+
+      console.log('day ', d + 1)
+      console.log(Object.values(this.grid).filter(v => v).length)
+    }
   };
+
+  private addNeighbours = (points: Point[]): Point[] => {
+    const result: Point[] = []
+    for (let point of points) {
+      const val = this.grid[pointKey(point)] || false
+      if (!val) {
+        continue
+      }
+      for (let dir of Object.values(moves)) {
+        const n = dir(point)
+        if (points.includes(n) || result.includes(n)) {
+          continue
+        }
+        result.push(n)
+      }
+    }
+    return result;
+  }
+
+  private countBlack = (point: Point): number => {
+    let cnt = 0
+    for (let dir of Object.values(moves)) {
+      const n = dir(point)
+      cnt += (this.grid[pointKey(n)] || false) ? 1 : 0
+    }
+    return cnt
+  }  
 }
 
 new Solve24().run();
